@@ -25,7 +25,6 @@ export default function App() {
       return (
             <>
                   <button onClick={create}>create wallet</button>
-                  {/* <div>{mnemonic}</div> */}
 
                   {mnemonic && (
                         <div>
@@ -37,9 +36,36 @@ export default function App() {
                   )}
                   {wallets && (
                         <div className="space-y-2 border-t border-slate-700 pt-3">
-                              <div> ETH: {wallets.eth.address}</div>
-                              <div> SOL: {wallets.sol.address}</div>
-                              <div> BTC: {wallets.btc.address}</div>
+                              <div>
+                                    <span>
+                                          ETH Public key: {wallets.eth.address}
+                                    </span>
+                                    <br />
+                                    <span>
+                                          ETH Private key:
+                                          {wallets.eth.privateKey}
+                                    </span>
+                              </div>
+                              <div>
+                                    <span>
+                                          SOL Public key: {wallets.sol.address}
+                                    </span>
+                                    <br />
+                                    <span>
+                                          SOL Private key:{" "}
+                                          {wallets.sol.privateKey}
+                                    </span>
+                              </div>
+                              <div>
+                                    <span>
+                                          BTC Public key: {wallets.btc.address}
+                                    </span>
+                                    <br />
+                                    <span>
+                                          BTC Private key:{" "}
+                                          {wallets.btc.privateKey}
+                                    </span>
+                              </div>
                         </div>
                   )}
             </>
