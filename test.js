@@ -1,35 +1,14 @@
 import { generateMnemonic, mnemonicToSeed, validateMnemonic } from "./src/wallets/mnemonic.ts";
 import createEthereumWallet from "./src/wallets/ethereum.ts";
 import createSolanaWallet from "./src/wallets/solana.ts";
-import { createBitcoinWallet } from "./src/wallets/bitcoin.ts";
+import createBitcoinWallet from "./src/wallets/bitcoin.ts";
 import { getEthBalance, getSolBalance, getBitcoinBalance } from "./src/wallets/balance.ts";
+import { sendSolana } from './src/wallets/sendSol.ts'
+import { airdropSolana } from './src/wallets/airDrop.ts'
 
-/* ---------- WALLET SET 1 (24 words) ---------- */
 
-const mnemonic24 = generateMnemonic(24);
-console.log("\n===== 24 WORD MNEMONIC =====");
-console.log(mnemonic24);
-console.log("Valid:", validateMnemonic(mnemonic24));
 
-const seed24 = mnemonicToSeed(mnemonic24);
 
-const ethWallet24 = createEthereumWallet(seed24);
-const solWallet24 = createSolanaWallet(seed24);
-const btcWallet24 = createBitcoinWallet(seed24);
-
-console.log("\n--- Derived wallets (24 words) ---");
-console.log("ETH:", ethWallet24.address);
-console.log("SOL:", solWallet24.address);
-console.log("BTC:", btcWallet24.address);
-
-const ethBalance24 = await getEthBalance(ethWallet24.address);
-const solBalance24 = await getSolBalance(solWallet24.address);
-const btcBalance24 = await getBitcoinBalance(btcWallet24.address);
-
-console.log("\n--- Balances (24 words) ---");
-console.log("ETH balance:", ethBalance24);
-console.log("SOL balance:", solBalance24);
-console.log("BTC balance:", btcBalance24);
 
 
 /* ---------- WALLET SET 2 (12 words) ---------- */
@@ -59,13 +38,20 @@ console.log("ETH balance:", ethBalance12);
 console.log("SOL balance:", solBalance12);
 console.log("BTC balance:", btcBalance12);
 
+console.log("Requesting devnet SOL airdrop...");
+const airdropSig = await airdropSolana(solWallet12.address, 1);
+console.log("Airdrop TX:", airdropSig);
 
-/* ---------- RAW OBJECT OUTPUT ---------- */
+const solBalanceAfter = await getSolBalance(solWallet12.address);
+console.log("SOL balance after airdrop:", solBalanceAfter);
 
-console.log("\n===== FULL WALLET OBJECTS =====");
-console.log("ETH 24:", ethWallet24);
-console.log("SOL 24:", solWallet24);
-console.log("BTC 24:", btcWallet24);
-console.log("ETH 12:", ethWallet12);
-console.log("SOL 12:", solWallet12);
-console.log("BTC 12:", btcWallet12);
+const sig = await sendSolana(
+      solWallet12.privateKey,
+      "oKBukKp3nN5m4r1fyDz6g5urUg7NBrPntNPDeTDMtkB",
+      0.01
+)
+
+console.log("TX:", sig);
+
+
+console.log("SOL balance:", solBalance12);
