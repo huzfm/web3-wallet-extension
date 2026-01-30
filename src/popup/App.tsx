@@ -37,18 +37,21 @@ export default function App() {
                         title="Ethereum"
                         accounts={wallet?.accounts.eth ?? []}
                         onAdd={() => addAccount("eth")}
+                        chainType="eth"
                   />
 
                   <Chain
                         title="Solana"
                         accounts={wallet?.accounts.sol ?? []}
                         onAdd={() => addAccount("sol")}
+                        chainType="sol"
                   />
 
                   <Chain
                         title="Bitcoin"
                         accounts={wallet?.accounts.btc ?? []}
                         onAdd={() => addAccount("btc")}
+                        chainType="btc"
                   />
             </>
       )

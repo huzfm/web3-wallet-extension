@@ -4,9 +4,9 @@ import { ethers } from "ethers"
 
 const eth = new ethers.JsonRpcProvider("https://ethereum.publicnode.com")
 
-export async function getEthBalance(address: string): Promise<string> {
+export async function getEthBalance(address: string): Promise<number> {
       const balance = await eth.getBalance(address)
-      return ethers.formatEther(balance)
+      return Number(ethers.formatEther(balance))
 }
 
 const solConnection = new Connection(clusterApiUrl("devnet"), "confirmed")

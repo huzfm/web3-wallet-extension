@@ -15,10 +15,8 @@ export async function sendSolana(
 ) {
       const connection = new Connection(clusterApiUrl("devnet"), "confirmed")
 
-      // ✅ convert hex -> Uint8Array
       const secretKey = Uint8Array.from(Buffer.from(fromPrivateKeyHex, "hex"))
 
-      // ✅ must be 64 bytes
       if (secretKey.length !== 64) {
             throw new Error("Invalid Solana secret key length")
       }
