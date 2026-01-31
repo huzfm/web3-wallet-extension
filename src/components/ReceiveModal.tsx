@@ -1,4 +1,3 @@
-import { CloseIcon, CopyIcon, CheckIcon } from "./icons/ChainIcons"
 import { useCopy } from "../hooks/useCopy"
 
 type Props = {
@@ -17,19 +16,17 @@ export function ReceiveModal({ address, chain, onClose }: Props) {
         const { copied, copy } = useCopy()
         const config = chainConfig[chain]
 
-        // Generate a simple pattern for the QR code simulation
+        // Generate a deterministic pattern for QR code simulation
         const generateQRPattern = () => {
                 const rows = []
                 for (let i = 0; i < 21; i++) {
                         const cols = []
                         for (let j = 0; j < 21; j++) {
-                                // Create positioning patterns in corners
                                 const isPositionPattern =
                                         (i < 7 && j < 7) ||
                                         (i < 7 && j >= 14) ||
                                         (i >= 14 && j < 7)
 
-                                // Create border for position patterns
                                 const isPositionBorder =
                                         isPositionPattern &&
                                         (i === 0 ||
@@ -42,7 +39,6 @@ export function ReceiveModal({ address, chain, onClose }: Props) {
                                                 (j >= 14 &&
                                                         (j === 14 || j === 20)))
 
-                                // Create inner square for position patterns
                                 const isPositionInner =
                                         isPositionPattern &&
                                         ((i >= 2 &&
@@ -58,7 +54,6 @@ export function ReceiveModal({ address, chain, onClose }: Props) {
                                                         j >= 2 &&
                                                         j <= 4))
 
-                                // Random-ish data pattern based on address
                                 const charCode = address.charCodeAt(
                                         (i * 21 + j) % address.length
                                 )
@@ -73,7 +68,7 @@ export function ReceiveModal({ address, chain, onClose }: Props) {
                                 cols.push(
                                         <div
                                                 key={j}
-                                                className={`w-2 h-2 ${shouldFill ? "bg-white" : "bg-transparent"}`}
+                                                className={`w-[6px] h-[6px] rounded-[1px] ${shouldFill ? "bg-zinc-900" : "bg-transparent"}`}
                                         />
                                 )
                         }
@@ -87,66 +82,76 @@ export function ReceiveModal({ address, chain, onClose }: Props) {
         }
 
         return (
-                <div className="fixed inset-0 z-50 flex items-end justify-center animate-fade-in">
+                <div className="fixed inset-0 z-50 flex items-end justify-center">
                         {/* Backdrop */}
                         <div
-                                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                                className="absolute inset-0 bg-black/70 backdrop-blur-sm"
                                 onClick={onClose}
                         />
 
                         {/* Modal */}
-                        <div className="relative w-full max-w-[375px] bg-[#12121a] rounded-t-3xl animate-slide-up">
+                        <div className="relative w-full max-w-[375px] bg-zinc-950 border-t border-zinc-800 rounded-t-2xl animate-slide-up">
+                                {/* Handle */}
+                                <div className="flex justify-center pt-3 pb-2">
+                                        <div className="w-10 h-1 rounded-full bg-zinc-700" />
+                                </div>
+
                                 {/* Header */}
-                                <div className="flex items-center justify-between p-4 border-b border-[rgba(148,163,184,0.1)]">
-                                        <h2 className="text-lg font-semibold">
-                                                Receive {config.symbol}
-                                        </h2>
+                                <div className="px-5 pb-4 flex items-center justify-between">
+                                        <div>
+                                                <h2 className="text-lg font-semibold text-white">
+                                                        Receive {config.symbol}
+                                                </h2>
+                                                <p className="text-sm text-zinc-500">
+                                                        Scan or copy address
+                                                </p>
+                                        </div>
                                         <button
                                                 onClick={onClose}
-                                                className="p-2 rounded-lg hover:bg-[#1a1a24] transition-colors text-[#64748b] hover:text-white"
+                                                className="w-8 h-8 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-zinc-800 transition-all"
                                         >
-                                                <CloseIcon size={20} />
+                                                <svg
+                                                        width="18"
+                                                        height="18"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                >
+                                                        <path d="M18 6L6 18M6 6l12 12" />
+                                                </svg>
                                         </button>
                                 </div>
 
                                 {/* Content */}
-                                <div className="p-6 flex flex-col items-center">
+                                <div className="px-5 pb-6 flex flex-col items-center">
                                         {/* QR Code */}
-                                        <div className="mb-6">
-                                                <div
-                                                        className="p-4 rounded-2xl"
-                                                        style={{
-                                                                background: config.color,
-                                                        }}
-                                                >
-                                                        <div className="p-3 bg-[#0a0a0f] rounded-xl">
-                                                                <div className="flex flex-col">
-                                                                        {generateQRPattern()}
-                                                                </div>
-                                                        </div>
+                                        <div className="mb-5 p-4 bg-white rounded-2xl">
+                                                <div className="flex flex-col">
+                                                        {generateQRPattern()}
                                                 </div>
                                         </div>
 
                                         {/* Network Badge */}
-                                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1a1a24] mb-4">
+                                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 mb-4">
                                                 <div
                                                         className="w-2 h-2 rounded-full"
                                                         style={{
                                                                 background: config.color,
                                                         }}
                                                 />
-                                                <span className="text-sm text-[#94a3b8]">
-                                                        {config.name} Network
+                                                <span className="text-xs font-medium text-zinc-400">
+                                                        {config.name}
                                                 </span>
                                         </div>
 
                                         {/* Address */}
-                                        <div className="w-full glass-card-sm p-4 mb-4">
-                                                <p className="text-xs text-[#64748b] mb-2 text-center">
-                                                        Your {config.symbol}{" "}
-                                                        Address
+                                        <div className="w-full p-4 rounded-xl bg-zinc-900 border border-zinc-800 mb-4">
+                                                <p className="text-xs text-zinc-500 mb-2 text-center">
+                                                        Your address
                                                 </p>
-                                                <p className="text-sm font-mono text-center break-all leading-relaxed">
+                                                <p className="text-xs font-mono text-zinc-300 text-center break-all leading-relaxed">
                                                         {address}
                                                 </p>
                                         </div>
@@ -154,41 +159,54 @@ export function ReceiveModal({ address, chain, onClose }: Props) {
                                         {/* Copy Button */}
                                         <button
                                                 onClick={() => copy(address)}
-                                                className="gradient-btn w-full py-3 flex items-center justify-center gap-2"
+                                                className="w-full h-12 rounded-xl bg-white text-zinc-900 font-medium text-sm transition-all hover:bg-zinc-100 flex items-center justify-center gap-2"
                                         >
                                                 {copied ? (
                                                         <>
-                                                                <CheckIcon
-                                                                        size={
-                                                                                18
-                                                                        }
-                                                                        className="text-white"
-                                                                />
+                                                                <svg
+                                                                        width="16"
+                                                                        height="16"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth="2.5"
+                                                                >
+                                                                        <polyline points="20 6 9 17 4 12" />
+                                                                </svg>
                                                                 Copied!
                                                         </>
                                                 ) : (
                                                         <>
-                                                                <CopyIcon
-                                                                        size={
-                                                                                18
-                                                                        }
-                                                                />
-                                                                Copy Address
+                                                                <svg
+                                                                        width="16"
+                                                                        height="16"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth="2"
+                                                                >
+                                                                        <rect
+                                                                                x="9"
+                                                                                y="9"
+                                                                                width="13"
+                                                                                height="13"
+                                                                                rx="2"
+                                                                        />
+                                                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                                                </svg>
+                                                                Copy address
                                                         </>
                                                 )}
                                         </button>
 
                                         {/* Warning */}
-                                        <p className="text-xs text-[#64748b] text-center mt-4">
+                                        <p className="text-[11px] text-zinc-600 text-center mt-4 max-w-[260px]">
                                                 Only send {config.symbol} to
                                                 this address. Sending other
                                                 assets may result in permanent
                                                 loss.
                                         </p>
                                 </div>
-
-                                {/* Safe area padding for mobile */}
-                                <div className="h-6" />
                         </div>
                 </div>
         )
