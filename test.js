@@ -6,11 +6,6 @@ import { getEthBalance, getSolBalance, getBitcoinBalance } from "./src/wallets/b
 import { sendSolana } from './src/wallets/sendSol.ts'
 import { airdropSolana } from './src/wallets/airDrop.ts'
 
-
-
-
-
-
 /* ---------- WALLET SET 2 (12 words) ---------- */
 
 const mnemonic12 = generateMnemonic(12);

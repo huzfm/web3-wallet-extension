@@ -1,58 +1,72 @@
 import { useState } from "react"
-import { CreateWallet } from "../components/createWallet"
-import { Mnemonic } from "../components/mnemonic"
-import { Chain } from "../components/chain"
+import { WelcomeScreen } from "../components/WelcomeScreen"
+import { MainWallet } from "../components/MainWallet"
 import {
-      createMasterWallet,
-      deriveAccount,
-      type WalletState,
+        createMasterWallet,
+        deriveAccount,
+        type WalletState,
 } from "../core/walletManager"
 
 export default function App() {
-      const [wallet, setWallet] = useState<WalletState | null>(null)
-      function create() {
-            setWallet(createMasterWallet)
-      }
+        const [wallet, setWallet] = useState<WalletState | null>(null)
+        const [activeChain, setActiveChain] = useState<"eth" | "sol" | "btc">(
+                "sol"
+        )
+        const [isCreating, setIsCreating] = useState(false)
 
-      function addAccount(chain: "eth" | "sol" | "btc") {
-            if (!wallet) return
-            const account = deriveAccount(wallet, chain)
-            setWallet({
-                  ...wallet,
-                  accounts: {
-                        ...wallet.accounts,
-                        [chain]: [...wallet.accounts[chain], account],
-                  },
-            })
-      }
-      return (
-            <>
-                  <h1>Multi Chain Wallet</h1>
+        async function create() {
+                setIsCreating(true)
+                // Small delay for animation
+                await new Promise((resolve) => setTimeout(resolve, 500))
+                const newWallet = createMasterWallet()
+                // Auto-create first account for each chain
+                const ethAccount = deriveAccount(newWallet, "eth")
+                const solAccount = deriveAccount(newWallet, "sol")
+                const btcAccount = deriveAccount(newWallet, "btc")
 
-                  {!wallet && <CreateWallet onCreate={create} />}
+                setWallet({
+                        ...newWallet,
+                        accounts: {
+                                eth: [ethAccount],
+                                sol: [solAccount],
+                                btc: [btcAccount],
+                        },
+                })
+                setIsCreating(false)
+        }
 
-                  {wallet && <Mnemonic mnemonic={wallet.mnemonic} />}
+        function addAccount(chain: "eth" | "sol" | "btc") {
+                if (!wallet) return
+                const account = deriveAccount(wallet, chain)
+                setWallet({
+                        ...wallet,
+                        accounts: {
+                                ...wallet.accounts,
+                                [chain]: [...wallet.accounts[chain], account],
+                        },
+                })
+        }
 
-                  <Chain
-                        title="Ethereum"
-                        accounts={wallet?.accounts.eth ?? []}
-                        onAdd={() => addAccount("eth")}
-                        chainType="eth"
-                  />
+        return (
+                <div className="relative w-full h-full bg-[#0a0a0f] overflow-hidden">
+                        {/* Background glow effects */}
+                        <div className="bg-glow bg-glow-purple absolute -top-20 -right-20 w-40 h-40 opacity-50" />
+                        <div className="bg-glow bg-glow-pink absolute bottom-20 -left-20 w-32 h-32 opacity-40" />
+                        <div className="bg-glow bg-glow-blue absolute top-1/2 right-10 w-24 h-24 opacity-30" />
 
-                  <Chain
-                        title="Solana"
-                        accounts={wallet?.accounts.sol ?? []}
-                        onAdd={() => addAccount("sol")}
-                        chainType="sol"
-                  />
-
-                  <Chain
-                        title="Bitcoin"
-                        accounts={wallet?.accounts.btc ?? []}
-                        onAdd={() => addAccount("btc")}
-                        chainType="btc"
-                  />
-            </>
-      )
+                        {!wallet ? (
+                                <WelcomeScreen
+                                        onCreate={create}
+                                        isCreating={isCreating}
+                                />
+                        ) : (
+                                <MainWallet
+                                        wallet={wallet}
+                                        activeChain={activeChain}
+                                        onChainChange={setActiveChain}
+                                        onAddAccount={addAccount}
+                                />
+                        )}
+                </div>
+        )
 }
